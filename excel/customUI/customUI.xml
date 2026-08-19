@@ -1,0 +1,97 @@
+<customUI onLoad="RibbonOnLoad" xmlns="http://schemas.microsoft.com/office/2006/01/customui">
+  <ribbon startFromScratch="false">
+    <tabs>
+      <tab id="tabXMLManager" label="XML Manager" insertBeforeMso="TabHome">
+
+        <!-- GRUPO 1: Documentos Recibidos -->
+        <group id="grpRecibidos" label="Documentos Recibidos">
+          <button id="btnCargarTXT"
+                  label="1. Cargar TXT"
+                  imageMso="ZoomOnePage"
+                  size="large"
+                  onAction="CargarTXT"
+                  supertip="Seleccione UN archivo TXT descargado manualmente del portal SRI (srienlinea.sri.gob.ec). Contiene la lista de comprobantes con sus claves de acceso."/>
+          <button id="btnCargarCarpetaTXT"
+                  label="1b. Cargar Carpeta"
+                  imageMso="FileOpen"
+                  size="large"
+                  onAction="CargarCarpetaTXT"
+                  supertip="Seleccione una CARPETA con varios TXT (por ejemplo, uno por cada dia del mes). Se procesaran TODOS juntos en una sola descarga; las claves repetidas se omiten. Util cuando el SRI solo permite bajar un TXT por dia."/>
+          <button id="btnDescargarXML"
+                  label="2. Descargar Recibidos"
+                  imageMso="XmlExport"
+                  size="large"
+                  onAction="DescargarXMLs"
+                  supertip="Descarga automaticamente los archivos XML de cada comprobante recibido usando el Web Service oficial del SRI. No requiere navegador."/>
+          <button id="btnReporteRecibidos"
+                  label="3. Reporte Recibidos"
+                  imageMso="FunctionsTextInsertGallery"
+                  size="large"
+                  onAction="GenerarReporteRecibidos"
+                  supertip="Genera un reporte Excel con dos hojas: Facturas recibidas (desglose de IVA 0%, 12%, 14%, 15%, base no objeto y base exenta) y Retenciones recibidas (codigo, base imponible, porcentaje, valor retenido y periodo fiscal)."/>
+        </group>
+
+        <!-- GRUPO 2: Documentos Emitidos -->
+        <group id="grpEmitidos" label="Documentos Emitidos">
+          <button id="btnCargarTXTEmit"
+                  label="1. Cargar TXT Emitidos"
+                  imageMso="ZoomOnePage"
+                  size="large"
+                  onAction="CargarTXTEmitidos"
+                  supertip="Seleccione UN TXT de comprobantes EMITIDOS descargado del portal SRI (facturas, retenciones, notas o liquidaciones emitidas)."/>
+          <button id="btnCargarCarpetaTXTEmit"
+                  label="1b. Cargar Carpeta"
+                  imageMso="FileOpen"
+                  size="large"
+                  onAction="CargarCarpetaTXTEmitidos"
+                  supertip="Seleccione una CARPETA con varios TXT de EMITIDOS (por ejemplo uno por dia del mes). Se procesan TODOS juntos; las claves repetidas se omiten."/>
+          <button id="btnDescargarEmit"
+                  label="2. Descargar Emitidos"
+                  imageMso="XmlExport"
+                  size="large"
+                  onAction="DescargarEmitidos"
+                  supertip="Descarga los XML de los comprobantes emitidos vía Web Service del SRI y genera sus PDF (RIDE)."/>
+          <button id="btnReporteEmit"
+                  label="3. Reporte Emitidos"
+                  imageMso="FunctionsTextInsertGallery"
+                  size="large"
+                  onAction="GenerarReporteEmitidos"
+                  supertip="Genera un Excel con una hoja por tipo: FC_Emitidas, NC_Emitidas, LIQ_Emitidas y RET_Emitidas (formato de retenciones pivoteado)."/>
+        </group>
+
+        <!-- GRUPO 3: Descarga automatica (Etapa 3) -->
+        <group id="grpAuto" label="Descarga automatica">
+          <button id="btnDescargaAuto"
+                  label="Descarga Auto"
+                  imageMso="RefreshAll"
+                  size="large"
+                  onAction="DescargaAutomatica"
+                  supertip="Hace login automatico al portal SRI, descarga el TXT del periodo indicado y los XMLs. Configure RUC, clave y fechas en la hoja Config."/>
+          <button id="btnDescargaMasiva"
+                  label="Descarga Masiva"
+                  imageMso="GroupMailMerge"
+                  size="large"
+                  onAction="DescargaMasivaMultiRUC"
+                  supertip="Descarga automatica para multiples RUCs en secuencia. Configure cada RUC con su clave y fechas en la hoja Multi-RUC. Ideal para contadores con varios clientes."/>
+        </group>
+
+        <!-- GRUPO 4: Ayuda -->
+        <group id="grpAyuda" label="Ayuda">
+          <button id="btnActivar"
+                  label="Activar"
+                  imageMso="AdpPrimaryKey"
+                  size="normal"
+                  onAction="ActivarLicencia"
+                  supertip="Registra tu clave de licencia para activar todas las funcionalidades."/>
+          <button id="btnAcercaDe"
+                  label="Acerca de"
+                  imageMso="Info"
+                  size="normal"
+                  onAction="AcercaDe"
+                  supertip="Informacion de version y creditos de SRI XML Manager."/>
+        </group>
+
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>

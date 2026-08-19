@@ -1,0 +1,67 @@
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+  <ribbon startFromScratch="false">
+    <tabs>
+      <tab id="tabXMLManager" label="XML Manager" insertAfterMso="TabHome">
+
+        <!-- GRUPO 1: Descargar -->
+        <group id="grpDescargar" label="Descargar comprobantes">
+
+          <button id="btnCargarTXT"
+                  label="1. Cargar TXT"
+                  imageMso="ZoomOnePage"
+                  size="large"
+                  onAction="CargarTXT"
+                  supertip="Seleccione el archivo TXT descargado manualmente del portal SRI (srienlinea.sri.gob.ec). Contiene la lista de comprobantes con sus claves de acceso."/>
+          <button id="btnDescargarXML"
+                  label="2. Descargar XMLs"
+                  imageMso="XmlExport"
+                  size="large"
+                  onAction="DescargarXMLs"
+                  supertip="Descarga automaticamente los archivos XML de cada comprobante usando el Web Service oficial del SRI. No requiere navegador."/>
+
+          <separator id="sep1"/>
+
+          <button id="btnDescargaAuto"
+                  label="Descarga Auto"
+                  imageMso="RefreshAll"
+                  size="large"
+                  onAction="DescargaAutomatica"
+                  supertip="Hace login automatico al portal SRI, descarga el TXT del periodo indicado y los XMLs, todo sin intervencion manual."/>
+        </group>
+
+        <!-- GRUPO 2: Reportes -->
+        <group id="grpReportes" label="Generar reportes Excel">
+          <button id="btnReporteFC"
+                  label="Facturas"
+                  imageMso="FunctionsTextInsertGallery"
+                  size="large"
+                  onAction="GenerarReporteFC"
+                  supertip="Genera un reporte Excel con todas las facturas recibidas."/>
+          <button id="btnReporteCR"
+                  label="Retenciones"
+                  imageMso="PivotSwitchRowColumn"
+                  size="large"
+                  onAction="GenerarReporteCR"
+                  supertip="Genera un reporte Excel con todos los comprobantes de retencion."/>
+        </group>
+
+        <!-- GRUPO 3: Ayuda -->
+        <group id="grpAyuda" label="Ayuda">
+          <button id="btnActivar"
+                  label="Activar"
+                  imageMso="AdpPrimaryKey"
+                  size="normal"
+                  onAction="ActivarLicencia"
+                  supertip="Registra tu clave de licencia para activar todas las funcionalidades."/>
+          <button id="btnAcercaDe"
+                  label="Acerca de"
+                  imageMso="Info"
+                  size="normal"
+                  onAction="AcercaDe"
+                  supertip="Informacion de version y creditos de SRI XML Manager."/>
+        </group>
+
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>

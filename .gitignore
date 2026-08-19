@@ -1,0 +1,70 @@
+# ══════════════════════════════════════════════════════════════
+#  SRI XML Manager — archivos que NO se versionan
+# ══════════════════════════════════════════════════════════════
+
+# ── Salidas de compilacion (se regeneran con PyInstaller) ─────
+build/
+buildpyinstaller/
+dist/
+dist_tmp/
+*.pkg
+*.pyz
+
+# Los ZIP de distribucion se publican como GitHub Releases,
+# no dentro del repositorio (pesan ~62 MB cada uno).
+*.zip
+
+# ── Ejecutables y binarios de terceros ───────────────────────
+# chromedriver se descarga aparte (ver README).
+chromedriver.exe
+sri_engine.exe
+excel/sri_engine.exe
+
+# ── Datos de ejecucion (pueden contener datos tributarios) ───
+# Los logs registran RUCs y razones sociales de empresas reales.
+trabajo/logs/
+trabajo/xmls/
+trabajo/reportes/
+config.json
+output.json
+
+# Comprobantes y reportes del SRI: NUNCA subir datos de clientes
+*_Recibidos.txt
+*_Emitidos*.txt
+xmls/
+xmls_emitidos/
+Documentos Recibidos/
+Documentos Emitidos/
+reportes/
+SRI_Reporte_*.xlsx
+SRI_Emitidos_*.xlsx
+_faltantes.json
+
+# ── Excel: archivos temporales y de prueba ───────────────────
+~$*.xls*
+excel/test_*.xlsm
+excel/test_output.bin
+excel/XML_Manager.xlsm.bak
+*.tmp
+*.bak
+
+# El .xlsm compilado se regenera con build_excel.py y se publica en
+# los Releases. NO se versiona (evita arrastrar una version desactualizada).
+# El seed de excel/templates/ SI se versiona: es insumo del build.
+excel/XML_Manager.xlsm
+
+# ── Python ───────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# ── Sistema operativo / editores ─────────────────────────────
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
