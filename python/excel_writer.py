@@ -230,6 +230,8 @@ COLS_EMIT_RET = [
     ("FECHA AUTORIZACION", 20), ("SECUENCIAL", 20), ("CLAVE ACCESO", 52),
     ("BASE RENTA", 13), ("% RENTA", 10), ("VALOR RENTA", 13),
     ("BASE IVA", 13), ("% IVA", 10), ("VALOR IVA", 13), ("TOTAL", 13),
+    # Codigos al final, para no alterar el orden del modelo original
+    ("COD. RENTA", 12), ("COD. IVA", 12),
 ]
 MONED_EMIT_RET = [10, 12, 13, 15, 16]   # bases, valores y total (no los %)
 PCT_EMIT_RET   = [11, 14]               # % renta, % iva
@@ -275,6 +277,13 @@ def _escribir_emit_retenciones(ws, retenciones: list):
     """
     Hoja RET_Emitidas con el formato pivoteado del modelo:
     una fila por documento de sustento, con Renta e IVA en columnas separadas.
+
+    Cuando un mismo documento de sustento trae VARIAS retenciones de renta o de
+    IVA (porcentajes distintos sobre la misma factura), se emite una fila
+    adicional por cada una para no perder ningun valor. Se emparejan por
+    posicion: la fila N lleva la N-esima de renta junto a la N-esima de IVA.
+    Ese emparejamiento es solo un acomodo visual — cada celda conserva su
+    propia base, porcentaje, valor y codigo.
     """
     ws.title = "RET_Emitidas"
     ws.freeze_panes = "A2"
@@ -291,36 +300,55 @@ def _escribir_emit_retenciones(ws, retenciones: list):
         if not grupos:
             grupos = {("", ""): []}
 
+        escrito = 0.0
         for (cod_sus, num_sus), imps in grupos.items():
-            renta = next((i for i in imps if i.codigo == "1"), None)
-            iva   = next((i for i in imps if i.codigo == "2"), None)
-            fill = PatternFill("solid", fgColor=COLOR_PAR if fila % 2 == 0 else COLOR_IMPAR)
+            rentas = [i for i in imps if i.codigo == "1"]
+            ivas   = [i for i in imps if i.codigo == "2"]
 
-            vals = [
-                r.periodo_fiscal,
-                r.razon_social_sujeto,
-                r.identificacion_sujeto,
-                _DOC_SUSTENTO_NOM.get(cod_sus, cod_sus),
-                num_sus,
-                r.fecha_emision,
-                r.fecha_autorizacion,
-                r.numero,
-                r.clave_acceso,
-                renta.base_imponible if renta else 0,
-                (renta.porcentaje_retener / 100.0) if renta else 0,
-                renta.valor_retenido if renta else 0,
-                iva.base_imponible if iva else 0,
-                (iva.porcentaje_retener / 100.0) if iva else 0,
-                iva.valor_retenido if iva else 0,
-                (renta.valor_retenido if renta else 0) + (iva.valor_retenido if iva else 0),
-            ]
-            for col, v in enumerate(vals, 1):
-                c = ws.cell(row=fila, column=col, value=v)
-                c.fill = fill; c.font = Font(size=9)
-            _fila_moneda(ws, fila, MONED_EMIT_RET)
-            for col in PCT_EMIT_RET:
-                ws.cell(row=fila, column=col).number_format = '0.0%'
-            fila += 1
+            for k in range(max(len(rentas), len(ivas), 1)):
+                renta = rentas[k] if k < len(rentas) else None
+                iva   = ivas[k]   if k < len(ivas)   else None
+                fill = PatternFill("solid",
+                                   fgColor=COLOR_PAR if fila % 2 == 0 else COLOR_IMPAR)
+
+                v_renta = renta.valor_retenido if renta else 0
+                v_iva   = iva.valor_retenido   if iva   else 0
+                escrito += v_renta + v_iva
+
+                vals = [
+                    r.periodo_fiscal,
+                    r.razon_social_sujeto,
+                    r.identificacion_sujeto,
+                    _DOC_SUSTENTO_NOM.get(cod_sus, cod_sus),
+                    num_sus,
+                    r.fecha_emision,
+                    r.fecha_autorizacion,
+                    r.numero,
+                    r.clave_acceso,
+                    renta.base_imponible if renta else 0,
+                    (renta.porcentaje_retener / 100.0) if renta else 0,
+                    v_renta,
+                    iva.base_imponible if iva else 0,
+                    (iva.porcentaje_retener / 100.0) if iva else 0,
+                    v_iva,
+                    v_renta + v_iva,
+                    renta.codigo_retencion if renta else "",
+                    iva.codigo_retencion if iva else "",
+                ]
+                for col, v in enumerate(vals, 1):
+                    c = ws.cell(row=fila, column=col, value=v)
+                    c.fill = fill; c.font = Font(size=9)
+                _fila_moneda(ws, fila, MONED_EMIT_RET)
+                for col in PCT_EMIT_RET:
+                    ws.cell(row=fila, column=col).number_format = '0.0%'
+                fila += 1
+
+        # Red de seguridad: lo escrito debe cuadrar con el total del XML.
+        # Si no cuadra, queda registrado en el log en vez de pasar silencioso.
+        if abs(escrito - r.total_retenido) > 0.01:
+            logger.warning(
+                f"RET {r.numero}: las filas suman {escrito:.2f} pero el XML "
+                f"declara {r.total_retenido:.2f} — revisar")
 
     if fila > 2:
         # Total solo en columnas monetarias
